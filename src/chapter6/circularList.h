@@ -13,7 +13,7 @@ public:
     int indexOf( const T& theElement ) const;
 
 protected:
-    chainNode<T> *headerNode;
+    chainNode<T> *firstNode;
     int listSize;
 };
 
@@ -24,9 +24,8 @@ protected:
 template <typename T>
 circularList<T>::circularList()
 {
-    headerNode = new chainNode<T>();
-    headerNode->next = headerNode;
-    listSize = 0;
+    firstNode = 0;
+    listSize  = 0;
 }
 
 
@@ -37,22 +36,7 @@ circularList<T>::circularList()
 template <typename T>
 int circularList<T>::indexOf( const T& theElement ) const
 {
-    // Insert theElement to header node (empty node)
-    headerNode->element = theElement;
-    int index = 0;
 
-    chainNode<T> *cur = headerNode->next;
-    while ( cur->element != theElement ){
-        index++;
-        cur = cur->next;
-    }
-
-    if ( cur == headerNode ){
-        // one circle
-        return -1;
-    }else{
-        return index;
-    }
 }
 
 #endif
