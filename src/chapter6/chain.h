@@ -35,7 +35,8 @@ public:
     void reverse();
     void meld( Chain<T>& chain_a, Chain<T>& chain_b );
     void merge( Chain<T>* c_a, Chain<T>* c_b );
-    void split( Chain<T>& c_a, Chain<T>& c_b ) const;
+    void split( Chain<T>& c_a, Chain<T>& c_b );
+    void binSort( int range );
 
     // operator
     T&   operator[] ( int theIndex );
@@ -380,7 +381,7 @@ void Chain<T>::output( std::ostream& out ) const
 template <typename T>
 void Chain<T>::mycheckIndex( int theIndex ) const
 {
-    if ( theIndex < 0 || theIndex > listSize ){
+    if ( theIndex < 0 || theIndex > listSize-1 ){
         throw -1;
     }
 
@@ -548,6 +549,7 @@ void Chain<T>::merge( Chain<T>* c_a, Chain<T>* c_b )
                  *ptr    = header,
                  *p_a    = c_a->firstNode,
                  *p_b    = c_b->firstNode;
+    int newSize = c_a->size() + c_b->size();
 
     while ( p_a && p_b ){
         if ( p_a->element <= p_b->element ){
@@ -575,6 +577,7 @@ void Chain<T>::merge( Chain<T>* c_a, Chain<T>* c_b )
     firstNode = header->next;
     delete header;
 
+    listSize = newSize;
     c_a->firstNode = 0; c_b->firstNode = 0;
     c_a->listSize  = 0; c_b->listSize  = 0;
 }
@@ -582,10 +585,11 @@ void Chain<T>::merge( Chain<T>* c_a, Chain<T>* c_b )
 
 /* 
  *  Split this chain into c_a & c_b
- *  c_a & c_b will use the space of this chain
+ *  c_a & c_b will use the space of this chain;
+ *  Zero this chain after this function.
  */
 template <typename T>
-void Chain<T>::split( Chain<T>& c_a, Chain<T>& c_b ) const
+void Chain<T>::split( Chain<T>& c_a, Chain<T>& c_b )
 {
     int index = 0;
     chainNode<T>    *ptr = firstNode,
@@ -597,26 +601,86 @@ void Chain<T>::split( Chain<T>& c_a, Chain<T>& c_b ) const
             if ( !p_a ){
                 p_a = c_a.firstNode = ptr;
                 ptr = ptr->next;
+                c_a.listSize++;
             }else{
                 p_a->next = ptr;
                 ptr = ptr->next;
                 p_a = p_a->next;
+                c_a.listSize++;
             }
         }else{
             // false -> odd
             if ( !p_b ){
                 p_b = c_b.firstNode = ptr;
                 ptr = ptr->next;
+                c_b.listSize++;
             }else{
                 p_b->next = ptr;
                 ptr = ptr->next;
                 p_b = p_b->next;
+                c_b.listSize++;
             }
         }
         // loop
         index++;
     }
 
+    firstNode = 0; listSize = 0;
+}
+
+
+template <typename T>
+void Chain<T>::binSort( int range )
+{
+    chainNode<T> **bottom, **top;
+    bottom = new chainNode<T>* [range+1];
+    top    = new chainNode<T>* [range+1];
+
+    // initialize buckets
+    for ( int b=0; b<=range; b++ ){
+        bottom[b] = 0;
+    }
+
+    for ( ; firstNode != 0; firstNode = firstNode->next ){
+        // bucket index
+        int theBin = firstNode->element;
+        if ( theBin > range ){
+            std::cout << "Wrong range scale !";
+            std::cout << "Bigger range needed." << std::endl;
+            exit(-1);
+        }
+        // set
+        if ( bottom[theBin] == 0 ){
+            //  empty bucket
+            bottom[theBin] = top[theBin] = firstNode;
+        }else{
+            // 
+            top[theBin]->next = firstNode;   
+            top[theBin] = firstNode;
+        }
+    }
+
+    // link all buckets
+    chainNode<T> *tmp;
+    for ( int b=0; b<=range; b++ ){
+        // befor this loop, firstNode = 0
+        if ( bottom[b] ){
+            // firstNode point to the first non-empty bucket
+            // if bucket[b] is not empty:
+            if ( firstNode == 0 ){
+                // first non-empty bucket
+                firstNode = bottom[b];
+                tmp = top[b];
+            }else{
+                tmp->next = bottom[b];
+                tmp = top[b];
+            }
+        }       
+    }
+    // end of chain
+    if ( tmp ){
+        tmp->next = 0;
+    }
 }
 
 /*

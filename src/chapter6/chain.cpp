@@ -63,7 +63,16 @@ int main()
     // std::cout << "bool: " << (c != d) << std::endl;
 
     std::cout << "***************" << std::endl;
-    std::cout << "***************" << std::endl;
-    std::cout << "***************" << std::endl;
+    std::cout << "Chain binSort() test: " << std::endl;
+    std::cout << "c.size(): " << c.size() << std::endl;
+    // c.set( 0, 3);
+    // c.set( 1, 1);
+    // c.set( 2, 4);
+    // c.set( 3, 2);
+    // c.set( 4, 5);
+    std::cout << "chain before sort(): " << c;
+    c.binSort( 2221 );
+    std::cout << "chain after sort(): " << c;
 
+    std::cout << "###############" << std::endl;
 }
