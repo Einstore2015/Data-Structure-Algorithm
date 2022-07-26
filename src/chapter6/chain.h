@@ -99,8 +99,6 @@ Chain<T>::Chain( const Chain<T>& theList )
 template <typename T>
 Chain<T>::~Chain()
 {
-    // to be delete
-    std::cout << "~~~~~" << std::endl;
 
     while ( firstNode ){
         chainNode<T> *del_ptr = firstNode;
@@ -108,7 +106,6 @@ Chain<T>::~Chain()
         std::cout << del_ptr->element << " ";
         delete del_ptr;
     }
-    std::cout << std::endl;
 }
 
 
