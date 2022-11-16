@@ -103,7 +103,7 @@ Chain<T>::~Chain()
     while ( firstNode ){
         chainNode<T> *del_ptr = firstNode;
         firstNode = del_ptr->next;
-        std::cout << del_ptr->element << " ";
+        // std::cout << del_ptr->element << " ";
         delete del_ptr;
     }
 }
